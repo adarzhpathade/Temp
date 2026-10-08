@@ -1,106 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Karla:wght@400;500;700&family=Special+Elite&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    --background: #070b12;
-    --foreground: #f1f5f9;
-    --card: #0c1322;
-    --card-foreground: #f8fafc;
-    --card-border: #1e293b;
-    --primary: #06b6d4;
-    --primary-foreground: #020617;
-    --accent-cyan: #22d3ee;
-    --accent-emerald: #10b981;
-    --accent-amber: #f59e0b;
-    --accent-rose: #f43f5e;
-    --muted: #64748b;
-    --muted-foreground: #94a3b8;
-  }
-
-  * {
-    border-color: var(--card-border);
+    --color-paper: #F4EEE2;
+    --color-paper-warm: #E7DDC8;
+    --color-cork: #6B5B45;
+    --color-ink: #33302B;
+    --color-body-soft: #4A463F;
+    --color-ultramarine: #3F5C9A;
+    --color-terracotta: #A85A33;
+    --color-sage: #6E8C4F;
+    --background: #F4EEE2;
+    --foreground: #33302B;
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #F4EEE2;
+    color: #33302B;
+    font-family: 'Karla', sans-serif;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
-/* Glassmorphism & Cyber-Medical Cards */
-.glass-panel {
-  background: rgba(12, 19, 34, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Typography Classes */
+.font-cav {
+  font-family: 'Caveat', cursive;
 }
 
-.glass-panel-glow {
-  background: rgba(12, 19, 34, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(6, 182, 212, 0.25);
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.15);
+.font-karla {
+  font-family: 'Karla', sans-serif;
 }
 
-.alert-high-glow {
-  border: 1px solid rgba(244, 63, 94, 0.45);
-  box-shadow: 0 0 30px -5px rgba(244, 63, 94, 0.25);
+.font-elite {
+  font-family: 'Special Elite', monospace;
 }
 
-.alert-amber-glow {
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.2);
+/* Sketchbook Skeuomorphism: SVG Paper Grain Texture */
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.08;
+  z-index: 5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Scanner HUD & Laser Animations */
-@keyframes laserSweep {
-  0% {
-    top: 0%;
-    opacity: 0.9;
-  }
-  50% {
-    top: 96%;
-    opacity: 1;
-  }
-  100% {
-    top: 0%;
-    opacity: 0.9;
-  }
+/* Washi Tape Strip */
+.tape {
+  position: absolute;
+  width: 90px;
+  height: 28px;
+  background: rgba(168, 90, 51, 0.28);
+  mix-blend-mode: multiply;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  z-index: 15;
 }
 
-.animate-laser {
-  animation: laserSweep 2.4s ease-in-out infinite;
+.tape-blue {
+  background: rgba(63, 92, 154, 0.25);
 }
 
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.75;
-    transform: scale(1.02);
-  }
+.tape-sage {
+  background: rgba(110, 140, 79, 0.28);
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite;
+/* Torn Paper Card Clip-Paths */
+.torn-paper-1 {
+  clip-path: polygon(2% 3%, 98% 0%, 100% 95%, 4% 100%, 0% 50%);
 }
 
-/* Custom Cyber Scrollbars */
+.torn-paper-2 {
+  clip-path: polygon(0% 4%, 96% 1%, 100% 92%, 5% 100%, 1% 48%);
+}
+
+.torn-paper-3 {
+  clip-path: polygon(3% 1%, 100% 4%, 97% 97%, 0% 100%, 1% 44%);
+}
+
+/* Polaroid & Card Hover Transitions */
+.polaroid-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+
+.polaroid-card:hover {
+  transform: rotate(0deg) translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 35px -10px rgba(51, 48, 43, 0.25);
+  z-index: 25;
+}
+
+/* Hand-Drawn Wobbly Ink Buttons */
+.ink-btn {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.ink-btn:hover {
+  transform: translateY(-2px) rotate(-1deg);
+}
+
+.ink-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Watercolor Wash Backgrounds */
+.watercolor-blot-blue {
+  background: radial-gradient(circle at 45% 45%, rgba(63, 92, 154, 0.45), rgba(63, 92, 154, 0.12) 65%, transparent 78%);
+  border-radius: 55% 45% 60% 40% / 50% 55% 45% 50%;
+}
+
+.watercolor-blot-terracotta {
+  background: radial-gradient(circle at 50% 45%, rgba(168, 90, 51, 0.38), rgba(168, 90, 51, 0.12) 65%, transparent 78%);
+  border-radius: 50% 55% 45% 55% / 55% 45% 55% 45%;
+}
+
+.watercolor-blot-sage {
+  background: radial-gradient(circle at 45% 50%, rgba(110, 140, 79, 0.38), rgba(110, 140, 79, 0.12) 65%, transparent 78%);
+  border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
+}
+
+/* Sketchbook Center Gutter Spine Fold */
+.sketchbook-gutter {
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(51, 48, 43, 0.12) 40%,
+    rgba(51, 48, 43, 0.05) 50%,
+    rgba(51, 48, 43, 0.12) 60%,
+    transparent
+  );
+}
+
+/* Custom Terracotta Sketchbook Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #070b12;
+  background: #E7DDC8;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 9999px;
+  background: #A85A33;
+  border-radius: 2px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #06b6d4;
+  background: #8b4421;
+}
+
+/* Organic Blob Radius */
+.organic-blob {
+  border-radius: 48% 52% 55% 45% / 52% 48% 50% 50%;
 }

@@ -281,13 +281,13 @@ When design references or prompts are provided by the user, extract and register
 
 | Component Type | Background Token | Border Token | Radius | Motion / Interaction | Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| *Scanner Frame* | *(from user reference)* | *(from user reference)* | *(from user reference)* | Laser sweep / HUD | Populated per user reference |
-| *High Alert Card* | *(from user reference)* | *(from user reference)* | *(from user reference)* | Alert pulse / glow | Populated per user reference |
-| *Spacing Card* | *(from user reference)* | *(from user reference)* | *(from user reference)* | Warning animation | Populated per user reference |
-| *Timeline Card* | *(from user reference)* | *(from user reference)* | *(from user reference)* | Spring hover / state | Populated per user reference |
-| *Preset Chip* | *(from user reference)* | *(from user reference)* | *(from user reference)* | Tap interaction | Populated per user reference |
+| *Scanner Frame* | `#FAF6EE` / `#F4EEE2` | `#33302B`/30 dashed | Rectangular | Reticle brackets + animated laser beam | Atelier Nº9 tactile viewfinder |
+| *High Alert Card* | `#FAF6EE` | `#A85A33` (terracotta) | Rectangular + Washi Tape | Terracotta badge + ink text | Atelier Nº9 skeuomorph card |
+| *Spacing Card* | `#FAF6EE` | `#3F5C9A` (ultramarine)| Rectangular + Washi Tape | Blue badge + 4h spacing pill | Atelier Nº9 skeuomorph card |
+| *Timeline Card* | `#FFFFFF` / `#FAF6EE` | `#33302B`/20 | Rectangular + Sage Tape | Spring checkmark + confetti burst | 4 time slots + adherence ring |
+| *Preset Chip* | `#FAF6EE` | `#33302B`/20 (active border) | Rectangular | Tap switch + instant state update | 3 zero-failure offline presets |
 
 ---
 
 ## 🚀 Execution Instructions for Next Step
-When you're ready to start building Phase 0, type **"Start Phase 0"** or provide your first **Design Reference**, and we will execute!
+Phase 0 complete & Atelier Nº9 design tokens imprinted. Ready to execute **Phase 1: Database Architecture & Serverless Driver (Neon)**.
