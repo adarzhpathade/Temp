@@ -11,17 +11,17 @@ import {
   CheckCircle2,
   Printer,
   Volume2,
-  RotateCcw,
   Trash2,
   Plus,
   Sparkles,
   User,
   Info,
-  Calendar,
-  HeartPulse,
-  Utensils,
+  Activity,
   ArrowRight,
   Upload,
+  Calendar,
+  X,
+  FileCheck,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -33,10 +33,9 @@ interface MedicationItem {
   frequency: string;
   instructions: string;
   pillAppearance: {
-    shape: string;
-    color: string;
-    imprint: string;
-    description: string;
+    shape: "round" | "oval" | "capsule" | "oblong" | "octagonal" | "softgel";
+    colorHex: string;
+    label: string;
   };
 }
 
@@ -47,6 +46,7 @@ interface AlertItem {
   drugs: [string, string] | [string];
   mechanism: string;
   directive: string;
+  evidenceScore: string;
 }
 
 interface ScheduleItem {
@@ -55,30 +55,29 @@ interface ScheduleItem {
   slotLabel: string;
   medication: string;
   dosage: string;
-  foodNote: string;
+  foodRequirement: string;
   isSpaced?: boolean;
   isTaken: boolean;
 }
 
-// 3 Pre-Packaged Demo Scenarios
-const DEMO_SCENARIOS = {
+const CLINICAL_PRESETS = {
   bleeding: {
-    title: "Scenario A: Severe Bleeding Conflict",
-    subtitle: "Warfarin + OTC Ibuprofen Hazard",
-    accent: "#A85A33",
+    name: "Scenario A: Severe Bleeding Crisis",
+    tagline: "Warfarin + OTC Ibuprofen Anticoagulant Hazard",
+    severityLevel: "HIGH" as const,
+    accentColor: "#A85A33",
     medications: [
       {
         id: "m-1",
         name: "Coumadin",
         genericName: "Warfarin Sodium",
         dosage: "5mg",
-        frequency: "Once daily at morning",
+        frequency: "Once daily (Morning)",
         instructions: "Take consistently at 08:00 AM with water",
         pillAppearance: {
-          shape: "round",
-          color: "#f6b26b",
-          imprint: "COUMADIN 5",
-          description: "Peach round scored tablet",
+          shape: "round" as const,
+          colorHex: "#F7BE98",
+          label: "Peach round scored tablet",
         },
       },
       {
@@ -86,13 +85,12 @@ const DEMO_SCENARIOS = {
         name: "Advil",
         genericName: "Ibuprofen",
         dosage: "400mg",
-        frequency: "As needed for joint pain",
+        frequency: "As needed for arthritic pain",
         instructions: "Taken with meals",
         pillAppearance: {
-          shape: "capsule",
-          color: "#cc4125",
-          imprint: "ADVIL 400",
-          description: "Red-brown liquid gel capsule",
+          shape: "capsule" as const,
+          colorHex: "#B84732",
+          label: "Red-brown liquid gel capsule",
         },
       },
       {
@@ -100,84 +98,84 @@ const DEMO_SCENARIOS = {
         name: "Zestril",
         genericName: "Lisinopril",
         dosage: "10mg",
-        frequency: "Once daily",
-        instructions: "Take in the morning for blood pressure",
+        frequency: "Once daily (Morning)",
+        instructions: "Take in the morning for hypertension",
         pillAppearance: {
-          shape: "round",
-          color: "#ffe599",
-          imprint: "L 10",
-          description: "Yellow round tablet",
+          shape: "round" as const,
+          colorHex: "#FCE7A2",
+          label: "Yellow circular tablet",
         },
       },
     ] as MedicationItem[],
     alerts: [
       {
         id: "a-1",
-        severity: "HIGH",
-        title: "GI Mucosal Hemorrhage & Platelet Aggregation Conflict",
-        drugs: ["Warfarin Sodium", "Ibuprofen"],
+        severity: "HIGH" as const,
+        title: "GI Hemorrhage & Platelet Aggregation Blockade",
+        drugs: ["Warfarin Sodium", "Ibuprofen"] as [string, string],
         mechanism:
-          "Ibuprofen displaces Warfarin from plasma albumin binding sites and inhibits platelet COX-1, escalating gastrointestinal bleeding risk by 3.5× while blunting Lisinopril antihypertensive efficacy.",
+          "Ibuprofen displaces Warfarin from plasma albumin binding sites while inhibiting platelet COX-1, multiplying GI mucosal bleeding hazards by 3.5× and diminishing Lisinopril renal clearance.",
         directive:
-          "DISCONTINUE OTC Ibuprofen immediately. Consult prescribing physician for Acetaminophen substitution (max 2,000mg/day).",
+          "DISCONTINUE OTC Ibuprofen immediately. Substitute with Acetaminophen (< 2,000mg/day) under physician supervision.",
+        evidenceScore: "Level 1A (FDA Black Box Warning)",
       },
     ] as AlertItem[],
     schedule: [
       {
         id: "s-1",
-        timeSlot: "08:00",
+        timeSlot: "08:00" as const,
         slotLabel: "Morning",
         medication: "Warfarin (Coumadin)",
         dosage: "5mg",
-        foodNote: "Take with 8oz water; avoid vitamin K swings",
+        foodRequirement: "Take with 8oz water; maintain stable dietary vitamin K",
         isTaken: true,
       },
       {
         id: "s-2",
-        timeSlot: "08:00",
+        timeSlot: "08:00" as const,
         slotLabel: "Morning",
         medication: "Lisinopril (Zestril)",
         dosage: "10mg",
-        foodNote: "Take with or without food",
+        foodRequirement: "Consistent morning dose with or without food",
         isTaken: true,
       },
       {
         id: "s-3",
-        timeSlot: "13:00",
+        timeSlot: "13:00" as const,
         slotLabel: "Afternoon",
         medication: "Ibuprofen (Advil)",
         dosage: "400mg",
-        foodNote: "⚠️ FLAGGED: Take with full meal if approved",
+        foodRequirement: "⚠️ FLAGGED INTERACTION: Discontinue or take with food",
         isTaken: false,
       },
       {
         id: "s-4",
-        timeSlot: "22:00",
+        timeSlot: "22:00" as const,
         slotLabel: "Bedtime",
-        medication: "Rest & Hydration",
+        medication: "Hydration & Rest Slot",
         dosage: "—",
-        foodNote: "Log BP before sleep",
+        foodRequirement: "Record blood pressure reading prior to sleep",
         isTaken: false,
       },
     ] as ScheduleItem[],
   },
   thyroid: {
-    title: "Scenario B: Thyroid Absorption Spacing",
-    subtitle: "Levothyroxine + Calcium Carbonate Stagger",
-    accent: "#3F5C9A",
+    name: "Scenario B: Thyroid Mineral Chelation",
+    tagline: "Levothyroxine + Calcium Carbonate 4-Hour Spacing",
+    severityLevel: "MODERATE" as const,
+    accentColor: "#3F5C9A",
     medications: [
       {
         id: "m-4",
         name: "Synthroid",
-        genericName: "Levothyroxine",
+        genericName: "Levothyroxine Sodium",
         dosage: "50mcg",
         frequency: "Once daily on empty stomach",
-        instructions: "Take 60 minutes before breakfast",
+        instructions: "Take 60 minutes before breakfast with full glass of water",
         pillAppearance: {
-          shape: "oval",
-          color: "#ffffff",
-          imprint: "SYN 50",
-          description: "White oval debossed tablet",
+          shape: "oval" as const,
+          colorHex: "#FFFFFF",
+          label: "White oval scored tablet",
         },
       },
       {
@@ -185,13 +183,12 @@ const DEMO_SCENARIOS = {
         name: "Caltrate",
         genericName: "Calcium Carbonate",
         dosage: "600mg",
-        frequency: "Once daily with food",
-        instructions: "Take with lunch or dinner",
+        frequency: "Once daily (Afternoon)",
+        instructions: "Take with lunch or afternoon meal",
         pillAppearance: {
-          shape: "oblong",
-          color: "#f3f3f3",
-          imprint: "CAL 600",
-          description: "Large white oblong coated tablet",
+          shape: "oblong" as const,
+          colorHex: "#EFEFEF",
+          label: "White oblong dense tablet",
         },
       },
       {
@@ -200,84 +197,84 @@ const DEMO_SCENARIOS = {
         genericName: "Metformin HCl",
         dosage: "500mg",
         frequency: "Twice daily with meals",
-        instructions: "Take with breakfast and dinner",
+        instructions: "Take with breakfast and dinner to reduce GI upset",
         pillAppearance: {
-          shape: "round",
-          color: "#ffffff",
-          imprint: "MET 500",
-          description: "White circular scored tablet",
+          shape: "round" as const,
+          colorHex: "#FFFFFF",
+          label: "White round scored tablet",
         },
       },
     ] as MedicationItem[],
     alerts: [
       {
         id: "a-2",
-        severity: "MODERATE",
-        title: "Chelation Binding & Reduced Thyroid Hormone Bioavailability",
-        drugs: ["Levothyroxine", "Calcium Carbonate"],
+        severity: "MODERATE" as const,
+        title: "Insoluble Chelation Complexation & Diminished T4 Bioavailability",
+        drugs: ["Levothyroxine", "Calcium Carbonate"] as [string, string],
         mechanism:
-          "Polyvalent calcium cations bind levothyroxine in the acidic gastrointestinal tract, forming an insoluble precipitate that diminishes T4 absorption by up to 55%.",
+          "Divalent calcium cations bind thyroxine in the gastric lumen, precipitating an insoluble chelate that reduces circulating T4 hormone absorption by up to 55%.",
         directive:
-          "AUTOMATICALLY SEPARATED: Enforce minimum 4-hour spacing between Levothyroxine (08:00 AM) and Calcium Carbonate (01:00 PM).",
+          "AUTOMATICALLY ENFORCED: 4-hour temporal separation required. Levothyroxine scheduled at 08:00 AM; Calcium shifted to 01:00 PM.",
+        evidenceScore: "Level 2B (Clinical Pharmacology Lexicomp)",
       },
     ] as AlertItem[],
     schedule: [
       {
         id: "s-5",
-        timeSlot: "08:00",
+        timeSlot: "08:00" as const,
         slotLabel: "Morning",
         medication: "Levothyroxine (Synthroid)",
         dosage: "50mcg",
-        foodNote: "Empty stomach • 60 mins before food",
+        foodRequirement: "Strictly empty stomach • 60 mins before meals",
         isTaken: true,
       },
       {
         id: "s-6",
-        timeSlot: "08:00",
+        timeSlot: "08:00" as const,
         slotLabel: "Morning",
         medication: "Metformin (Glucophage)",
         dosage: "500mg",
-        foodNote: "Take with breakfast meal",
+        foodRequirement: "Take with breakfast",
         isTaken: true,
       },
       {
         id: "s-7",
-        timeSlot: "13:00",
+        timeSlot: "13:00" as const,
         slotLabel: "Afternoon",
         medication: "Calcium Carbonate (Caltrate)",
         dosage: "600mg",
-        foodNote: "Take with lunch",
+        foodRequirement: "Take with lunch • Auto-staggered by 4h",
         isSpaced: true,
         isTaken: false,
       },
       {
         id: "s-8",
-        timeSlot: "19:00",
+        timeSlot: "19:00" as const,
         slotLabel: "Evening",
         medication: "Metformin (Glucophage)",
         dosage: "500mg",
-        foodNote: "Take with evening meal",
+        foodRequirement: "Take with dinner",
         isTaken: false,
       },
     ] as ScheduleItem[],
   },
   safe: {
-    title: "Scenario C: Safe Maintenance Stack",
-    subtitle: "Atorvastatin + Amlodipine Routine",
-    accent: "#6E8C4F",
+    name: "Scenario C: Safe Maintenance Regimen",
+    tagline: "Atorvastatin + Amlodipine Monitored Stack",
+    severityLevel: "FOOD" as const,
+    accentColor: "#5F7D43",
     medications: [
       {
         id: "m-7",
         name: "Lipitor",
         genericName: "Atorvastatin Calcium",
         dosage: "20mg",
-        frequency: "Once daily evening",
-        instructions: "Take with evening meal or bedtime",
+        frequency: "Once daily (Evening)",
+        instructions: "Take with evening meal or at bedtime",
         pillAppearance: {
-          shape: "oval",
-          color: "#ffffff",
-          imprint: "ATV 20",
-          description: "White elliptical tablet",
+          shape: "oval" as const,
+          colorHex: "#FFFFFF",
+          label: "White elliptical tablet",
         },
       },
       {
@@ -285,13 +282,12 @@ const DEMO_SCENARIOS = {
         name: "Norvasc",
         genericName: "Amlodipine Besylate",
         dosage: "5mg",
-        frequency: "Once daily morning",
-        instructions: "Take at consistent morning hour",
+        frequency: "Once daily (Morning)",
+        instructions: "Take every morning at consistent hour",
         pillAppearance: {
-          shape: "octagonal",
-          color: "#f9f9f9",
-          imprint: "AML 5",
-          description: "White octagonal scored tablet",
+          shape: "octagonal" as const,
+          colorHex: "#F5F5F5",
+          label: "White octagonal scored tablet",
         },
       },
       {
@@ -300,62 +296,62 @@ const DEMO_SCENARIOS = {
         genericName: "Ubiquinone",
         dosage: "100mg",
         frequency: "Once daily with food",
-        instructions: "Take with breakfast for cellular support",
+        instructions: "Take with breakfast for cellular coenzyme support",
         pillAppearance: {
-          shape: "softgel",
-          color: "#ffd966",
-          imprint: "Q10",
-          description: "Golden amber oval softgel",
+          shape: "softgel" as const,
+          colorHex: "#FAD066",
+          label: "Golden amber oval softgel",
         },
       },
     ] as MedicationItem[],
     alerts: [
       {
         id: "a-3",
-        severity: "FOOD",
-        title: "Dietary CYP3A4 Furanocoumarin Caution (Grapefruit)",
-        drugs: ["Atorvastatin Calcium"],
+        severity: "FOOD" as const,
+        title: "Intestinal CYP3A4 Furanocoumarin Dietary Interaction",
+        drugs: ["Atorvastatin Calcium"] as [string],
         mechanism:
-          "Grapefruit and Seville oranges irreversibly inhibit intestinal CYP3A4 isoenzymes, which can increase serum Atorvastatin concentrations and trigger rhabdomyolysis or myopathy.",
+          "Grapefruit compounds irreversibly inhibit intestinal CYP3A4, causing significant elevations in circulating Atorvastatin levels and elevating risk of myalgia or rhabdomyolysis.",
         directive:
-          "Avoid consuming grapefruit juice or whole grapefruit during Atorvastatin therapy.",
+          "Avoid whole grapefruit, juice, and Seville orange marmalade during active Atorvastatin therapy.",
+        evidenceScore: "Level 1B (FDA Guidance & PubMed)",
       },
     ] as AlertItem[],
     schedule: [
       {
         id: "s-9",
-        timeSlot: "08:00",
+        timeSlot: "08:00" as const,
         slotLabel: "Morning",
         medication: "Amlodipine (Norvasc)",
         dosage: "5mg",
-        foodNote: "Consistent morning dose with water",
+        foodRequirement: "Take with full glass of water",
         isTaken: true,
       },
       {
         id: "s-10",
-        timeSlot: "08:00",
+        timeSlot: "08:00" as const,
         slotLabel: "Morning",
         medication: "CoQ10 (Ubiquinone)",
         dosage: "100mg",
-        foodNote: "Take with meal containing dietary fat",
+        foodRequirement: "Take with meal containing dietary lipids",
         isTaken: true,
       },
       {
         id: "s-11",
-        timeSlot: "19:00",
+        timeSlot: "19:00" as const,
         slotLabel: "Evening",
         medication: "Atorvastatin (Lipitor)",
         dosage: "20mg",
-        foodNote: "Take with dinner • No grapefruit products",
+        foodRequirement: "Take with dinner • Strictly no grapefruit",
         isTaken: false,
       },
       {
         id: "s-12",
-        timeSlot: "22:00",
+        timeSlot: "22:00" as const,
         slotLabel: "Bedtime",
-        medication: "Hydration & Rest",
+        medication: "Hydration & Rest Slot",
         dosage: "—",
-        foodNote: "Glass of water before sleep",
+        foodRequirement: "Standard evening hydration",
         isTaken: false,
       },
     ] as ScheduleItem[],
@@ -363,27 +359,28 @@ const DEMO_SCENARIOS = {
 };
 
 export default function Home() {
-  const [selectedScenarioKey, setSelectedScenarioKey] = useState<"bleeding" | "thyroid" | "safe">("bleeding");
-  const [inputMode, setInputMode] = useState<"image" | "text">("image");
-  const [customText, setCustomText] = useState("");
-  const [isScanning, setIsScanning] = useState(false);
-  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [activeScenarioKey, setActiveScenarioKey] = useState<"bleeding" | "thyroid" | "safe">("bleeding");
+  const [inputChannel, setInputChannel] = useState<"image" | "text">("image");
+  const [manualDrugText, setManualDrugText] = useState("");
+  const [isScanningActive, setIsScanningActive] = useState(false);
+  const [isAudioSpeaking, setIsAudioSpeaking] = useState(false);
+  const [isCaregiverModalOpen, setIsCaregiverModalOpen] = useState(false);
 
-  const scenario = DEMO_SCENARIOS[selectedScenarioKey];
+  const scenario = CLINICAL_PRESETS[activeScenarioKey];
   const [medications, setMedications] = useState<MedicationItem[]>(scenario.medications);
   const [alerts, setAlerts] = useState<AlertItem[]>(scenario.alerts);
   const [schedule, setSchedule] = useState<ScheduleItem[]>(scenario.schedule);
 
-  // Switch demo preset
+  // Switch demo preset immediately
   const handleSelectScenario = (key: "bleeding" | "thyroid" | "safe") => {
-    setSelectedScenarioKey(key);
-    const data = DEMO_SCENARIOS[key];
+    setActiveScenarioKey(key);
+    const data = CLINICAL_PRESETS[key];
     setMedications(data.medications);
     setAlerts(data.alerts);
     setSchedule(data.schedule);
   };
 
-  // Toggle dose taken & trigger celebration confetti
+  // Toggle dose taken & fire particle confetti
   const handleToggleTaken = (id: string) => {
     setSchedule((prev) =>
       prev.map((item) => {
@@ -391,10 +388,10 @@ export default function Home() {
           const nextState = !item.isTaken;
           if (nextState) {
             confetti({
-              particleCount: 45,
-              spread: 60,
-              origin: { y: 0.7 },
-              colors: ["#3F5C9A", "#A85A33", "#6E8C4F", "#33302B"],
+              particleCount: 55,
+              spread: 65,
+              origin: { y: 0.65 },
+              colors: ["#3F5C9A", "#A85A33", "#5F7D43", "#2B2723"],
             });
           }
           return { ...item, isTaken: nextState };
@@ -404,605 +401,729 @@ export default function Home() {
     );
   };
 
-  // Remove medication
-  const handleRemoveMedication = (id: string) => {
+  // Remove medication from cabinet
+  const handleRemoveMed = (id: string) => {
     const updated = medications.filter((m) => m.id !== id);
     setMedications(updated);
-    // If fewer than 2 meds, clear interaction alerts
     if (updated.length < 2) {
       setAlerts([]);
     }
   };
 
-  // Simulate scanning action
-  const handleTriggerScan = () => {
-    setIsScanning(true);
+  // Simulate scanning trigger
+  const handleRunOCRScan = () => {
+    setIsScanningActive(true);
     setTimeout(() => {
-      setIsScanning(false);
+      setIsScanningActive(false);
       confetti({
-        particleCount: 50,
-        spread: 70,
-        colors: ["#3F5C9A", "#A85A33", "#6E8C4F"],
+        particleCount: 60,
+        spread: 80,
+        colors: ["#3F5C9A", "#A85A33", "#5F7D43"],
       });
-    }, 1200);
+    }, 1400);
   };
 
-  // Web Speech API plain English summary readout
-  const handleSpeakSummary = () => {
+  // Elderly plain English audio summary
+  const handleToggleAudio = () => {
     if (!("speechSynthesis" in window)) return;
-    if (audioPlaying) {
+    if (isAudioSpeaking) {
       window.speechSynthesis.cancel();
-      setAudioPlaying(false);
+      setIsAudioSpeaking(false);
       return;
     }
 
     const highAlert = alerts.find((a) => a.severity === "HIGH");
-    const textToRead = highAlert
-      ? `Attention for patient Margaret Vance. High safety alert detected between ${highAlert.drugs.join(
+    const summary = highAlert
+      ? `Important safety advisory for patient Margaret Vance. A critical conflict exists between ${highAlert.drugs.join(
           " and "
         )}. ${highAlert.directive}`
-      : `Prescription schedule reviewed for patient Margaret Vance. ${medications.length} active prescriptions currently managed. All doses appropriately spaced.`;
+      : `Clinical safety check completed for patient Margaret Vance. ${medications.length} active prescriptions currently verified. Daily doses are appropriately separated.`;
 
-    const utterance = new SpeechSynthesisUtterance(textToRead);
-    utterance.rate = 0.95;
-    utterance.onend = () => setAudioPlaying(false);
-    utterance.onerror = () => setAudioPlaying(false);
-    setAudioPlaying(true);
+    const utterance = new SpeechSynthesisUtterance(summary);
+    utterance.rate = 0.92;
+    utterance.onend = () => setIsAudioSpeaking(false);
+    utterance.onerror = () => setIsAudioSpeaking(false);
+    setIsAudioSpeaking(true);
     window.speechSynthesis.speak(utterance);
   };
 
   // Adherence calculation
   const totalDoses = schedule.filter((s) => s.dosage !== "—").length;
-  const takenDoses = schedule.filter((s) => s.dosage !== "—" && s.isTaken).length;
-  const adherencePercent = totalDoses > 0 ? Math.round((takenDoses / totalDoses) * 100) : 100;
+  const dosesTaken = schedule.filter((s) => s.dosage !== "—" && s.isTaken).length;
+  const adherenceRate = totalDoses > 0 ? Math.round((dosesTaken / totalDoses) * 100) : 100;
 
   return (
-    <div className="relative min-h-screen bg-[#F4EEE2] text-[#33302B] font-karla selection:bg-[#A85A33]/25 selection:text-[#33302B] overflow-x-hidden">
-      {/* Tactile Paper Grain Texture Overlay */}
-      <div className="grain" />
+    <div className="min-h-screen bg-[#FAF8F5] text-[#2B2723] font-sans-clinical selection:bg-[#A85A33]/20 selection:text-[#2B2723] relative">
+      {/* Subtle Fixed Micro-Grain Texture */}
+      <div className="fixed-grain" />
 
-      {/* Top Tactical Command Header */}
-      <header className="relative z-20 border-b border-[#33302B]/15 bg-[#FAF6EE]/90 backdrop-blur-md sticky top-0 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
-          {/* Logo & Clinical Brand Title */}
+      {/* ================= TOP CLINICAL COMMAND BAR ================= */}
+      <header className="sticky top-0 z-40 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#2B2723]/10 shadow-[0_1px_3px_rgba(43,39,35,0.03)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+          {/* Logo & Product Identity */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-sm bg-[#33302B] text-[#F4EEE2] flex items-center justify-center shadow-sm rotate-[-1deg]">
-              <ShieldAlert className="w-5 h-5 text-[#FAF6EE]" />
+            <div className="w-10 h-10 rounded-xl bg-[#2B2723] flex items-center justify-center shadow-sm ring-1 ring-[#2B2723]/10">
+              <ShieldAlert className="w-5 h-5 text-[#FAF8F5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-cav text-3xl font-bold tracking-tight text-[#33302B] leading-none">
+                <span className="font-bold text-xl tracking-tight text-[#2B2723]">
                   RxGuard
                 </span>
-                <span className="font-elite text-[10px] uppercase tracking-wider px-2 py-0.5 border border-[#33302B]/30 bg-[#E7DDC8] text-[#33302B] rounded-xs">
+                <span className="font-mono-clinical text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-md bg-[#EAE4D9] text-[#2B2723] border border-[#2B2723]/15">
                   Pharmalens PS-6
                 </span>
               </div>
-              <p className="font-elite text-[11px] text-[#A85A33] tracking-wide">
-                MULTI-MODAL PRESCRIPTION SCANNER & CONTRAINDICATION MATRIX
+              <p className="text-[11px] text-[#57524C] hidden sm:block">
+                Clinical Prescription Scanner & Pharmacovigilance Matrix
               </p>
             </div>
           </div>
 
-          {/* Patient Dossier Chip with Washi Tape */}
-          <div className="relative bg-white px-4 py-2 border border-[#33302B]/20 shadow-xs rotate-[0.5deg]">
-            <div className="tape" style={{ top: "-9px", right: "15%", transform: "rotate(2deg)" }} />
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full bg-[#E7DDC8] flex items-center justify-center text-[#33302B]">
-                <User className="w-4 h-4" />
+          {/* Patient Dossier Chip */}
+          <div className="hidden md:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#FAF8F5] border border-[#2B2723]/12 shadow-xs">
+            <div className="w-6 h-6 rounded-full bg-[#EAE4D9] flex items-center justify-center text-[#2B2723]">
+              <User className="w-3.5 h-3.5" />
+            </div>
+            <div className="text-left text-xs">
+              <div className="flex items-center gap-1.5 font-semibold text-[#2B2723]">
+                <span>Margaret Vance, 74</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#5F7D43]" />
               </div>
-              <div className="text-left">
-                <div className="flex items-center gap-2">
-                  <span className="font-elite text-xs text-[#33302B] font-semibold">
-                    Margaret Vance, 74
-                  </span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#6E8C4F]" />
-                </div>
-                <p className="font-elite text-[10px] text-[#3F5C9A]">
-                  Polypharmacy Journal #RX-9042 · Dr. Chen Verified
-                </p>
-              </div>
+              <span className="font-mono-clinical text-[10px] text-[#3F5C9A]">
+                MRN #RX-9042 · Polypharmacy Protocol
+              </span>
             </div>
           </div>
 
-          {/* Quick Header Utility Actions */}
-          <div className="flex items-center gap-2">
+          {/* Action Hub (Audio, Caregiver Sheet, Print) */}
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={handleSpeakSummary}
-              className={`ink-btn px-3 py-1.5 font-elite text-xs uppercase tracking-wider border flex items-center gap-1.5 rounded-xs transition-colors ${
-                audioPlaying
-                  ? "bg-[#A85A33] text-white border-[#A85A33]"
-                  : "bg-white text-[#33302B] border-[#33302B]/30 hover:bg-[#FAF6EE]"
+              onClick={handleToggleAudio}
+              className={`spring-hover px-3.5 py-2 rounded-lg text-xs font-medium border flex items-center gap-1.5 cursor-pointer ${
+                isAudioSpeaking
+                  ? "bg-[#A85A33] text-white border-[#A85A33] shadow-sm"
+                  : "bg-white text-[#2B2723] border-[#2B2723]/15 hover:bg-[#FAF8F5]"
               }`}
-              title="Voice summary for elderly patients"
+              title="Read clinical directives aloud for elderly patients"
             >
-              <Volume2 className="w-3.5 h-3.5" />
-              <span>{audioPlaying ? "Playing..." : "Audio Readout"}</span>
+              <Volume2 className="w-4 h-4" />
+              <span className="hidden sm:inline">
+                {isAudioSpeaking ? "Speaking..." : "Audio Readout"}
+              </span>
             </button>
 
+            {/* Nested Button-in-Button Architecture for Primary CTA */}
             <button
               type="button"
-              onClick={() => window.print()}
-              className="ink-btn px-3 py-1.5 bg-white text-[#33302B] font-elite text-xs uppercase tracking-wider border border-[#33302B]/30 hover:bg-[#FAF6EE] flex items-center gap-1.5 rounded-xs"
-              title="Print clinical care report"
+              onClick={() => setIsCaregiverModalOpen(true)}
+              className="spring-hover group inline-flex items-center gap-2 pl-4 pr-1.5 py-1.5 rounded-full bg-[#2B2723] text-[#FAF8F5] text-xs font-semibold shadow-xs cursor-pointer hover:bg-[#1C1917]"
             >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Caregiver Sheet</span>
+              <span>Caregiver Summary</span>
+              <span className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-[#A85A33] transition-colors">
+                <Printer className="w-3.5 h-3.5 text-white" />
+              </span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Clinical Dashboard Workspace */}
+      {/* ================= MAIN DASHBOARD WORKSPACE ================= */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Preset Selector Banner (Zero-Failure Hackathon Demo Controls) */}
-        <section className="bg-white border border-[#33302B]/15 p-4 shadow-xs">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#A85A33]" />
-              <span className="font-elite text-xs uppercase tracking-wider text-[#33302B]">
-                1-Click Demo Scenarios (Pre-Seeded Offline Resilience):
+        {/* 1-Click Clinical Demo Scenarios (Zero-Failure Hackathon Gate) */}
+        <div className="double-bezel-card">
+          <div className="double-bezel-inner p-4 sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#A85A33]" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#2B2723]">
+                  1-Click Live Demonstration Presets (Instant Offline Fail-Safe):
+                </h2>
+              </div>
+              <span className="font-script text-lg text-[#5F7D43]">
+                zero network latency ↘
               </span>
             </div>
-            <span className="font-cav text-lg text-[#6E8C4F]">
-              instant fail-safe switch ↘
-            </span>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {(
-              [
-                ["bleeding", "Scenario A: Severe Bleeding", "Warfarin + Ibuprofen (High Risk)", "#A85A33"],
-                ["thyroid", "Scenario B: Mineral Spacing", "Levothyroxine + Calcium (4h Stagger)", "#3F5C9A"],
-                ["safe", "Scenario C: Safe Maintenance", "Atorvastatin + Amlodipine (Diet Caution)", "#6E8C4F"],
-              ] as const
-            ).map(([key, label, sub, color]) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleSelectScenario(key)}
-                className={`p-3 text-left border transition-all rounded-xs relative ${
-                  selectedScenarioKey === key
-                    ? "bg-[#FAF6EE] border-[#33302B] shadow-sm -translate-y-0.5"
-                    : "bg-white border-[#33302B]/20 hover:bg-[#FAF6EE]"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span
-                    className="font-elite text-xs uppercase tracking-wider font-semibold"
-                    style={{ color }}
-                  >
-                    {label}
-                  </span>
-                  {selectedScenarioKey === key && (
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                  )}
-                </div>
-                <p className="font-karla text-xs text-[#4A463F] mt-1">{sub}</p>
-              </button>
-            ))}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {(
+                [
+                  [
+                    "bleeding",
+                    "Scenario A: Severe Bleeding Crisis",
+                    "Warfarin 5mg + Ibuprofen 400mg (3.5× Hazard)",
+                    "#A85A33",
+                  ],
+                  [
+                    "thyroid",
+                    "Scenario B: Mineral Spacing Conflict",
+                    "Levothyroxine 50mcg + Calcium 600mg (4h Stagger)",
+                    "#3F5C9A",
+                  ],
+                  [
+                    "safe",
+                    "Scenario C: Safe Maintenance Regimen",
+                    "Atorvastatin 20mg + Amlodipine 5mg (Dietary Caution)",
+                    "#5F7D43",
+                  ],
+                ] as const
+              ).map(([key, name, desc, color]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleSelectScenario(key)}
+                  className={`spring-hover text-left p-3.5 rounded-xl border cursor-pointer relative transition-all ${
+                    activeScenarioKey === key
+                      ? "bg-[#FAF8F5] border-[#2B2723] shadow-xs"
+                      : "bg-white border-[#2B2723]/10 hover:border-[#2B2723]/30"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span
+                      className="text-xs font-bold tracking-tight"
+                      style={{ color }}
+                    >
+                      {name}
+                    </span>
+                    {activeScenarioKey === key && (
+                      <span
+                        className="w-2 h-2 rounded-full ring-2 ring-white"
+                        style={{ backgroundColor: color }}
+                      />
+                    )}
+                  </div>
+                  <p className="text-[11px] text-[#57524C] mt-1">{desc}</p>
+                </button>
+              ))}
+            </div>
           </div>
-        </section>
+        </div>
 
-        {/* 2-Column Application Layout */}
+        {/* Master Bento Grid (Left 5 Cols: Input & Cabinet | Right 7 Cols: Matrix & Timeline) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* ================= LEFT COLUMN: INPUT CHANNELS & MEDICINE CABINET (5 cols) ================= */}
+          {/* ================= LEFT BENTO: INPUT CHANNELS & CABINET (5 Cols) ================= */}
           <div className="lg:col-span-5 space-y-6">
             {/* CARD 1: Two Clean Input Channels (Image vs Text) */}
-            <div className="bg-white border border-[#33302B]/20 shadow-sm p-6 relative">
-              <div className="tape" style={{ top: "-11px", left: "20%", transform: "rotate(-3deg)" }} />
-
-              <div className="flex items-center justify-between pb-3 border-b border-[#33302B]/10 mb-4">
-                <div className="flex items-center gap-2">
-                  <Pill className="w-4 h-4 text-[#3F5C9A]" />
-                  <h2 className="font-elite text-xs uppercase tracking-wider text-[#33302B]">
-                    Prescription Input Channel
-                  </h2>
+            <div className="double-bezel-card">
+              <div className="double-bezel-inner p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#2B2723]/8">
+                  <div className="flex items-center gap-2">
+                    <Pill className="w-4 h-4 text-[#3F5C9A]" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#2B2723]">
+                      Prescription Input Channels
+                    </h3>
+                  </div>
+                  <span className="font-mono-clinical text-[11px] text-[#A85A33]">
+                    PS-6 CORE
+                  </span>
                 </div>
-                <span className="font-cav text-lg text-[#A85A33]">
-                  two options ✍️
-                </span>
-              </div>
 
-              {/* Segmented Mode Selector */}
-              <div className="grid grid-cols-2 gap-2 bg-[#FAF6EE] p-1 border border-[#33302B]/15 mb-4 rounded-xs">
-                <button
-                  type="button"
-                  onClick={() => setInputMode("image")}
-                  className={`py-2 px-3 font-elite text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
-                    inputMode === "image"
-                      ? "bg-[#33302B] text-[#F4EEE2] shadow-xs"
-                      : "text-[#33302B] hover:bg-[#E7DDC8]/60"
-                  }`}
-                >
-                  <Camera className="w-3.5 h-3.5 text-[#A85A33]" />
-                  Option 1: Image
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setInputMode("text")}
-                  className={`py-2 px-3 font-elite text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
-                    inputMode === "text"
-                      ? "bg-[#33302B] text-[#F4EEE2] shadow-xs"
-                      : "text-[#33302B] hover:bg-[#E7DDC8]/60"
-                  }`}
-                >
-                  <Search className="w-3.5 h-3.5 text-[#3F5C9A]" />
-                  Option 2: Text
-                </button>
-              </div>
-
-              {/* Mode 1: Image Mode (Camera / Viewfinder) */}
-              {inputMode === "image" ? (
-                <div className="space-y-4">
-                  {/* Cyber-Medical Viewfinder with Atelier Stylings */}
-                  <div className="relative h-56 border-2 border-dashed border-[#33302B]/30 bg-[#FAF6EE] flex flex-col items-center justify-center p-4 text-center overflow-hidden">
-                    {/* Animated Scanning Laser Beam */}
-                    <div
-                      className={`absolute left-0 right-0 h-0.5 bg-[#3F5C9A] shadow-[0_0_8px_#3F5C9A] pointer-events-none ${
-                        isScanning ? "animate-laser" : "top-1/2 opacity-40"
-                      }`}
-                    />
-
-                    {/* Corner Reticle Brackets */}
-                    <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[#33302B]" />
-                    <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[#33302B]" />
-                    <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[#33302B]" />
-                    <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#33302B]" />
-
-                    <Camera className="w-8 h-8 text-[#33302B]/70 mb-2" />
-                    <p className="font-elite text-xs text-[#33302B] font-semibold">
-                      Align Pill Bottle or Upload Prescription
-                    </p>
-                    <p className="font-karla text-[11px] text-[#4A463F] mt-1 max-w-xs">
-                      Gemini 2.0 Flash extracts Brand Name, NDC, Dosage & Pill Geometry in a single multi-modal call.
-                    </p>
-
-                    <label className="mt-3 cursor-pointer inline-flex items-center gap-1.5 bg-white border border-[#33302B]/30 px-3 py-1 font-elite text-[10px] uppercase tracking-wider text-[#33302B] hover:bg-[#FAF6EE]">
-                      <Upload className="w-3 h-3 text-[#A85A33]" />
-                      Browse Photo
-                      <input type="file" accept="image/*" className="hidden" />
-                    </label>
-                  </div>
-
-                  {/* Scan Trigger Action Button */}
-                  <div className="flex items-center justify-between pt-1">
-                    <button
-                      type="button"
-                      disabled={isScanning}
-                      onClick={handleTriggerScan}
-                      className="ink-btn w-full bg-[#33302B] text-[#F4EEE2] py-2.5 px-4 font-elite text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs hover:bg-[#24221E] disabled:opacity-70"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-[#E7DDC8]" />
-                      {isScanning ? "Running Vision OCR..." : "Capture & Run Clinical OCR"}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                /* Mode 2: Text Mode (Manual Search & Form) */
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="font-elite text-xs text-[#33302B] block">
-                      Prescription Name / Active Chemical:
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={customText}
-                        onChange={(e) => setCustomText(e.target.value)}
-                        placeholder="e.g. Warfarin 5mg, Advil 400mg, Levothyroxine..."
-                        className="w-full bg-[#FAF6EE] border border-[#33302B]/30 px-3.5 py-2 font-elite text-xs text-[#33302B] placeholder:text-[#33302B]/40 focus:outline-none focus:border-[#33302B]"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Strength & Dosage Chips */}
-                  <div className="space-y-1.5">
-                    <span className="font-elite text-[11px] text-[#33302B]/70 block">
-                      Quick Strength Selectors:
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {["5mg", "10mg", "20mg", "400mg", "500mcg", "600mg"].map((dose) => (
-                        <button
-                          key={dose}
-                          type="button"
-                          onClick={() => setCustomText((prev) => (prev ? `${prev} ${dose}` : dose))}
-                          className="font-elite text-[10px] px-2 py-0.5 bg-[#FAF6EE] border border-[#33302B]/30 hover:bg-[#33302B] hover:text-[#F4EEE2] transition-colors"
-                        >
-                          {dose}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                {/* Concentric Segmented Switcher */}
+                <div className="grid grid-cols-2 p-1 rounded-xl bg-[#FAF8F5] border border-[#2B2723]/10">
+                  <button
+                    type="button"
+                    onClick={() => setInputChannel("image")}
+                    className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      inputChannel === "image"
+                        ? "bg-white text-[#2B2723] shadow-xs border border-[#2B2723]/10"
+                        : "text-[#57524C] hover:text-[#2B2723]"
+                    }`}
+                  >
+                    <Camera className="w-3.5 h-3.5 text-[#A85A33]" />
+                    Option 1: Image
+                  </button>
 
                   <button
                     type="button"
-                    onClick={() => {
-                      if (!customText.trim()) return;
-                      const newMed: MedicationItem = {
-                        id: `m-${Date.now()}`,
-                        name: customText,
-                        genericName: customText,
-                        dosage: "Standard dose",
-                        frequency: "Daily",
-                        instructions: "As directed by physician",
-                        pillAppearance: {
-                          shape: "round",
-                          color: "#ffffff",
-                          imprint: "RX",
-                          description: "Standard white tablet",
-                        },
-                      };
-                      setMedications([newMed, ...medications]);
-                      setCustomText("");
-                    }}
-                    className="ink-btn w-full bg-[#33302B] text-[#F4EEE2] py-2.5 px-4 font-elite text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs hover:bg-[#24221E]"
+                    onClick={() => setInputChannel("text")}
+                    className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      inputChannel === "text"
+                        ? "bg-white text-[#2B2723] shadow-xs border border-[#2B2723]/10"
+                        : "text-[#57524C] hover:text-[#2B2723]"
+                    }`}
                   >
-                    <Plus className="w-3.5 h-3.5" />
-                    Add Prescription to Active Cabinet
+                    <Search className="w-3.5 h-3.5 text-[#3F5C9A]" />
+                    Option 2: Text
                   </button>
                 </div>
-              )}
-            </div>
 
-            {/* CARD 2: Active Medication Cabinet */}
-            <div className="bg-white border border-[#33302B]/20 shadow-sm p-6 relative">
-              <div className="tape-blue tape" style={{ top: "-11px", right: "20%", transform: "rotate(3deg)" }} />
-
-              <div className="flex items-center justify-between pb-3 border-b border-[#33302B]/10 mb-4">
-                <div className="flex items-center gap-2">
-                  <Pill className="w-4 h-4 text-[#A85A33]" />
-                  <h3 className="font-elite text-xs uppercase tracking-wider text-[#33302B]">
-                    Active Medicine Cabinet ({medications.length})
-                  </h3>
-                </div>
-                <span className="font-cav text-lg text-[#3F5C9A]">
-                  monitored actively ↺
-                </span>
-              </div>
-
-              {/* Medication List */}
-              <div className="space-y-3">
-                {medications.map((med) => (
-                  <div
-                    key={med.id}
-                    className="p-3 bg-[#FAF6EE] border border-[#33302B]/15 hover:border-[#33302B]/40 transition-all flex items-start justify-between gap-3"
-                  >
-                    <div className="flex items-start gap-3">
-                      {/* Pill appearance physical avatar */}
+                {/* Option 1: Vision Scanner Mode */}
+                {inputChannel === "image" ? (
+                  <div className="space-y-4">
+                    {/* Cyber-Medical Viewfinder Hardware Frame */}
+                    <div className="relative h-60 rounded-xl bg-[#FAF8F5] border-2 border-dashed border-[#2B2723]/20 flex flex-col items-center justify-center p-4 text-center overflow-hidden">
+                      {/* Illuminated Animated Laser Beam */}
                       <div
-                        className="w-8 h-8 rounded-full border border-[#33302B]/30 flex items-center justify-center text-[10px] font-elite font-bold shadow-xs shrink-0 mt-0.5"
-                        style={{ backgroundColor: med.pillAppearance.color }}
-                        title={med.pillAppearance.description}
-                      >
-                        💊
+                        className={`absolute left-0 right-0 h-0.5 bg-[#3F5C9A] shadow-[0_0_10px_#3F5C9A] pointer-events-none ${
+                          isScanningActive ? "animate-laser-sweep" : "top-1/2 opacity-30"
+                        }`}
+                      />
+
+                      {/* Precision Reticle Corner Brackets */}
+                      <div className="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-[#2B2723]/60 rounded-tl-sm" />
+                      <div className="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-[#2B2723]/60 rounded-tr-sm" />
+                      <div className="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-[#2B2723]/60 rounded-bl-sm" />
+                      <div className="absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 border-[#2B2723]/60 rounded-br-sm" />
+
+                      <div className="w-12 h-12 rounded-full bg-white shadow-xs border border-[#2B2723]/10 flex items-center justify-center text-[#3F5C9A] mb-2">
+                        <Camera className="w-6 h-6" />
                       </div>
 
-                      <div>
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-karla text-sm font-bold text-[#33302B]">
-                            {med.name}
-                          </span>
-                          <span className="font-elite text-xs text-[#A85A33] font-semibold">
-                            {med.dosage}
-                          </span>
-                        </div>
-                        <p className="font-elite text-[11px] text-[#4A463F]">
-                          {med.genericName} · {med.frequency}
-                        </p>
-                        <p className="font-karla text-[11px] text-[#6B5B45] mt-0.5">
-                          {med.instructions}
-                        </p>
+                      <p className="text-xs font-bold text-[#2B2723]">
+                        Align Prescription Label or Pill Bottle
+                      </p>
+                      <p className="text-[11px] text-[#57524C] max-w-xs mt-1">
+                        Gemini 2.0 Flash Vision reads curved bottle text, NDC identifier, strength, and pill color.
+                      </p>
+
+                      <label className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-[#2B2723]/15 text-xs font-medium text-[#2B2723] hover:bg-[#FAF8F5] cursor-pointer shadow-2xs">
+                        <Upload className="w-3.5 h-3.5 text-[#A85A33]" />
+                        <span>Upload Photo / Label</span>
+                        <input type="file" accept="image/*" className="hidden" />
+                      </label>
+                    </div>
+
+                    {/* Scan Action Button */}
+                    <button
+                      type="button"
+                      disabled={isScanningActive}
+                      onClick={handleRunOCRScan}
+                      className="spring-hover w-full py-3 px-4 rounded-xl bg-[#2B2723] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs cursor-pointer hover:bg-[#1C1917] disabled:opacity-70"
+                    >
+                      <Sparkles className="w-4 h-4 text-[#FAF8F5]" />
+                      {isScanningActive ? "Extracting Clinical JSON..." : "Run Multi-Modal Vision OCR"}
+                    </button>
+                  </div>
+                ) : (
+                  /* Option 2: Text Formulary Search Mode */
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-[#2B2723] block">
+                        Drug Name or Active Chemical Ingredient:
+                      </label>
+                      <input
+                        type="text"
+                        value={manualDrugText}
+                        onChange={(e) => setManualDrugText(e.target.value)}
+                        placeholder="e.g. Warfarin, Advil 400mg, Levothyroxine 50mcg..."
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F5] border border-[#2B2723]/15 text-xs text-[#2B2723] placeholder:text-[#8C857D] focus:outline-none focus:ring-1 focus:ring-[#2B2723]"
+                      />
+                    </div>
+
+                    {/* Quick Strength Selectors */}
+                    <div className="space-y-1.5">
+                      <span className="text-[11px] font-medium text-[#57524C] block">
+                        Quick Strength Chips:
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {["5mg", "10mg", "20mg", "400mg", "500mcg", "600mg"].map((dose) => (
+                          <button
+                            key={dose}
+                            type="button"
+                            onClick={() =>
+                              setManualDrugText((prev) => (prev ? `${prev} ${dose}` : dose))
+                            }
+                            className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#FAF8F5] border border-[#2B2723]/15 hover:bg-[#2B2723] hover:text-white transition-colors cursor-pointer"
+                          >
+                            {dose}
+                          </button>
+                        ))}
                       </div>
                     </div>
 
                     <button
                       type="button"
-                      onClick={() => handleRemoveMedication(med.id)}
-                      className="text-[#33302B]/40 hover:text-[#A85A33] p-1 transition-colors"
-                      title="Remove from cabinet"
+                      onClick={() => {
+                        if (!manualDrugText.trim()) return;
+                        const newMed: MedicationItem = {
+                          id: `m-${Date.now()}`,
+                          name: manualDrugText,
+                          genericName: manualDrugText,
+                          dosage: "Standard dose",
+                          frequency: "Daily",
+                          instructions: "As directed by physician",
+                          pillAppearance: {
+                            shape: "round",
+                            colorHex: "#FFFFFF",
+                            label: "Standard white circular tablet",
+                          },
+                        };
+                        setMedications([newMed, ...medications]);
+                        setManualDrugText("");
+                      }}
+                      className="spring-hover w-full py-3 px-4 rounded-xl bg-[#2B2723] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs cursor-pointer hover:bg-[#1C1917]"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Plus className="w-4 h-4" />
+                      Add Prescription to Patient Regimen
                     </button>
-                  </div>
-                ))}
-
-                {medications.length === 0 && (
-                  <div className="text-center py-8 text-[#33302B]/50 font-elite text-xs border border-dashed border-[#33302B]/20">
-                    Cabinet is currently empty. Add medication above.
                   </div>
                 )}
               </div>
             </div>
+
+            {/* CARD 2: Active Prescription Medicine Cabinet */}
+            <div className="double-bezel-card">
+              <div className="double-bezel-inner p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#2B2723]/8">
+                  <div className="flex items-center gap-2">
+                    <Pill className="w-4 h-4 text-[#A85A33]" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#2B2723]">
+                      Active Medicine Cabinet ({medications.length})
+                    </h3>
+                  </div>
+                  <span className="font-script text-lg text-[#3F5C9A]">
+                    monitored actively ↺
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {medications.map((med) => (
+                    <div
+                      key={med.id}
+                      className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#2B2723]/10 hover:border-[#2B2723]/30 transition-all flex items-start justify-between gap-3 shadow-2xs"
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Physical Pill Appearance Icon */}
+                        <div
+                          className="w-8 h-8 rounded-full border border-[#2B2723]/20 shadow-xs flex items-center justify-center text-xs shrink-0 mt-0.5"
+                          style={{ backgroundColor: med.pillAppearance.colorHex }}
+                          title={med.pillAppearance.label}
+                        >
+                          💊
+                        </div>
+
+                        <div>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-sm font-bold text-[#2B2723]">
+                              {med.name}
+                            </span>
+                            <span className="font-mono-clinical text-xs font-bold text-[#A85A33]">
+                              {med.dosage}
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#57524C] font-medium">
+                            {med.genericName} · {med.frequency}
+                          </p>
+                          <p className="text-[11px] text-[#8C857D] mt-0.5">
+                            {med.instructions}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMed(med.id)}
+                        className="text-[#8C857D] hover:text-[#A85A33] p-1.5 transition-colors cursor-pointer"
+                        title="Remove prescription"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {medications.length === 0 && (
+                    <div className="py-8 text-center text-xs text-[#8C857D] border border-dashed border-[#2B2723]/15 rounded-xl">
+                      No prescriptions in cabinet. Scan bottle or enter drug name above.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* ================= RIGHT COLUMN: CONTRAINDICATIONS & 24H TIMELINE (7 cols) ================= */}
+          {/* ================= RIGHT BENTO: MATRIX & 24H TIMELINE (7 Cols) ================= */}
           <div className="lg:col-span-7 space-y-6">
-            {/* CARD 3: Clinical Contraindication & Interaction Engine */}
-            <div className="bg-white border border-[#33302B]/20 shadow-sm p-6 relative">
-              <div className="tape" style={{ top: "-11px", right: "25%", transform: "rotate(2deg)" }} />
-
-              <div className="flex items-center justify-between pb-3 border-b border-[#33302B]/10 mb-4">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-[#A85A33]" />
-                  <h3 className="font-elite text-xs uppercase tracking-wider text-[#33302B]">
-                    Clinical Contraindication Matrix
-                  </h3>
+            {/* CARD 3: Clinical Contraindication & Safety Engine */}
+            <div className="double-bezel-card">
+              <div className="double-bezel-inner p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#2B2723]/8">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-[#A85A33]" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#2B2723]">
+                      Clinical Contraindication Matrix
+                    </h3>
+                  </div>
+                  <span className="font-script text-lg text-[#A85A33]">
+                    pharmacology engine active ⚡
+                  </span>
                 </div>
-                <span className="font-cav text-lg text-[#A85A33]">
-                  real-time evaluation ⚠️
-                </span>
-              </div>
 
-              {/* Alert Banners */}
-              {alerts.length > 0 ? (
-                <div className="space-y-4">
-                  {alerts.map((alert) => (
+                {alerts.length > 0 ? (
+                  <div className="space-y-3.5">
+                    {alerts.map((alert) => (
+                      <div
+                        key={alert.id}
+                        className={`p-4 rounded-xl border transition-all ${
+                          alert.severity === "HIGH"
+                            ? "bg-[#FAF8F5] border-[#A85A33] shadow-xs"
+                            : alert.severity === "MODERATE"
+                            ? "bg-[#FAF8F5] border-[#3F5C9A] shadow-xs"
+                            : "bg-[#FAF8F5] border-[#5F7D43] shadow-xs"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                alert.severity === "HIGH"
+                                  ? "bg-[#A85A33] text-white"
+                                  : alert.severity === "MODERATE"
+                                  ? "bg-[#3F5C9A] text-white"
+                                  : "bg-[#5F7D43] text-white"
+                              }`}
+                            >
+                              {alert.severity} SEVERITY
+                            </span>
+                            <span className="font-bold text-xs text-[#2B2723]">
+                              {alert.drugs.join(" ⚡ ")}
+                            </span>
+                          </div>
+                          <span className="font-mono-clinical text-[10px] text-[#57524C]">
+                            {alert.evidenceScore}
+                          </span>
+                        </div>
+
+                        <h4 className="text-base font-bold text-[#2B2723] leading-snug mb-1.5">
+                          {alert.title}
+                        </h4>
+
+                        <p className="text-xs text-[#57524C] leading-relaxed mb-3">
+                          <strong className="text-[#2B2723]">Mechanism of Action:</strong>{" "}
+                          {alert.mechanism}
+                        </p>
+
+                        <div className="p-3 rounded-lg bg-white border border-[#2B2723]/10 text-xs text-[#2B2723] flex items-start gap-2 shadow-2xs">
+                          <Info className="w-4 h-4 text-[#A85A33] shrink-0 mt-0.5" />
+                          <div>
+                            <strong className="text-[#A85A33]">CLINICAL DIRECTIVE: </strong>
+                            {alert.directive}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 rounded-xl bg-[#FAF8F5] border border-[#5F7D43]/30 text-center">
+                    <CheckCircle2 className="w-8 h-8 text-[#5F7D43] mx-auto mb-2" />
+                    <p className="text-base font-bold text-[#2B2723]">
+                      No Clinical Contraindications Detected
+                    </p>
+                    <p className="text-xs text-[#57524C] mt-1 max-w-sm mx-auto">
+                      All active medications are cleared for concurrent administration with no documented pharmacokinetic conflicts.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* CARD 4: Interactive 24-Hour Daily Timeline & Smart Scheduler */}
+            <div className="double-bezel-card">
+              <div className="double-bezel-inner p-5 space-y-4">
+                <div className="flex flex-wrap items-center justify-between pb-3 border-b border-[#2B2723]/8 gap-2">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-[#3F5C9A]" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#2B2723]">
+                      24-Hour Daily Timeline & Adherence Ring
+                    </h3>
+                  </div>
+
+                  {/* Adherence Progress Chip */}
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#2B2723]/12 text-xs">
+                    <span className="text-[#2B2723] font-medium">
+                      Adherence: <strong>{dosesTaken} / {totalDoses} Doses ({adherenceRate}%)</strong>
+                    </span>
+                    <div className="w-14 h-2 rounded-full bg-[#EAE4D9] overflow-hidden">
+                      <div
+                        className="h-full bg-[#5F7D43] transition-all duration-500 rounded-full"
+                        style={{ width: `${adherenceRate}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4 Daily Time Slot Buckets */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {schedule.map((slot) => (
                     <div
-                      key={alert.id}
-                      className={`p-4 border transition-all ${
-                        alert.severity === "HIGH"
-                          ? "bg-[#FAF6EE] border-[#A85A33] shadow-sm"
-                          : alert.severity === "MODERATE"
-                          ? "bg-[#FAF6EE] border-[#3F5C9A] shadow-sm"
-                          : "bg-[#FAF6EE] border-[#6E8C4F] shadow-sm"
+                      key={slot.id}
+                      className={`p-3.5 rounded-xl border transition-all ${
+                        slot.isTaken
+                          ? "bg-[#FAF8F5] border-[#5F7D43]/40 shadow-2xs"
+                          : "bg-white border-[#2B2723]/10 hover:border-[#2B2723]/30"
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
-                          <span
-                            className={`font-elite text-[10px] uppercase tracking-wider px-2 py-0.5 font-bold ${
-                              alert.severity === "HIGH"
-                                ? "bg-[#A85A33] text-white"
-                                : alert.severity === "MODERATE"
-                                ? "bg-[#3F5C9A] text-white"
-                                : "bg-[#6E8C4F] text-white"
+                          <span className="font-mono-clinical text-[10px] px-1.5 py-0.5 rounded bg-[#EAE4D9] text-[#2B2723] font-bold">
+                            {slot.timeSlot}
+                          </span>
+                          <span className="text-xs font-bold text-[#2B2723]">
+                            {slot.slotLabel}
+                          </span>
+                        </div>
+
+                        {slot.dosage !== "—" && (
+                          <button
+                            type="button"
+                            onClick={() => handleToggleTaken(slot.id)}
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-all ${
+                              slot.isTaken
+                                ? "bg-[#5F7D43] text-white"
+                                : "bg-[#FAF8F5] text-[#2B2723] border border-[#2B2723]/15 hover:bg-[#EAE4D9]"
                             }`}
                           >
-                            {alert.severity} SEVERITY
-                          </span>
-                          <span className="font-elite text-xs text-[#33302B] font-semibold">
-                            {alert.drugs.join(" ⚡ ")}
-                          </span>
-                        </div>
-
-                        <span className="font-cav text-xl text-[#A85A33]">
-                          {alert.severity === "HIGH" ? "urgent review ⚠" : "safety note ↘"}
-                        </span>
+                            <CheckCircle2 className="w-3 h-3" />
+                            {slot.isTaken ? "Taken" : "Mark Taken"}
+                          </button>
+                        )}
                       </div>
 
-                      <h4 className="font-cav text-2xl font-bold text-[#33302B] leading-tight mb-2">
-                        {alert.title}
-                      </h4>
+                      <div className="text-sm font-bold text-[#2B2723]">
+                        {slot.medication}
+                        {slot.dosage !== "—" && (
+                          <span className="font-mono-clinical text-xs font-semibold text-[#A85A33] ml-1.5">
+                            {slot.dosage}
+                          </span>
+                        )}
+                      </div>
 
-                      <p className="font-karla text-xs text-[#4A463F] leading-relaxed mb-3">
-                        <strong className="text-[#33302B]">Clinical Mechanism:</strong> {alert.mechanism}
+                      <p className="text-[11px] text-[#57524C] mt-1">
+                        {slot.foodRequirement}
                       </p>
 
-                      <div className="bg-white p-3 border border-[#33302B]/15 text-xs font-elite text-[#33302B] flex items-start gap-2">
-                        <Info className="w-4 h-4 text-[#A85A33] shrink-0 mt-0.5" />
-                        <div>
-                          <strong className="text-[#A85A33]">DIRECTIVE: </strong>
-                          {alert.directive}
+                      {slot.isSpaced && (
+                        <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold text-[#3F5C9A] bg-[#3F5C9A]/10 border border-[#3F5C9A]/20">
+                          ⚡ Auto-spaced by 4 hours for safety
                         </div>
-                      </div>
+                      )}
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="p-6 bg-[#FAF6EE] border border-[#6E8C4F]/40 text-center">
-                  <CheckCircle2 className="w-8 h-8 text-[#6E8C4F] mx-auto mb-2" />
-                  <p className="font-cav text-2xl text-[#33302B] font-bold">
-                    No Contraindications Detected
-                  </p>
-                  <p className="font-karla text-xs text-[#4A463F] mt-1 max-w-sm mx-auto">
-                    The active combination shows no documented high-risk pharmacokinetic or pharmacodynamic conflicts.
-                  </p>
-                </div>
-              )}
-            </div>
 
-            {/* CARD 4: Interactive 24-Hour Timeline & Smart Auto-Scheduler */}
-            <div className="bg-white border border-[#33302B]/20 shadow-sm p-6 relative">
-              <div className="tape-sage tape" style={{ top: "-11px", left: "20%", transform: "rotate(-2deg)" }} />
-
-              <div className="flex flex-wrap items-center justify-between pb-3 border-b border-[#33302B]/10 mb-4 gap-2">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#3F5C9A]" />
-                  <h3 className="font-elite text-xs uppercase tracking-wider text-[#33302B]">
-                    Interactive 24-Hour Timeline & Adherence
-                  </h3>
-                </div>
-
-                {/* Daily Adherence Progress Pill */}
-                <div className="flex items-center gap-2 bg-[#FAF6EE] px-3 py-1 border border-[#33302B]/20">
-                  <span className="font-elite text-[11px] text-[#33302B]">
-                    Adherence: <strong>{takenDoses} / {totalDoses} Doses ({adherencePercent}%)</strong>
+                {/* Physician Clinical Attestation */}
+                <div className="pt-3 border-t border-[#2B2723]/8 flex flex-wrap items-center justify-between text-xs text-[#57524C] gap-2">
+                  <span className="font-mono-clinical text-[11px] text-[#2B2723]">
+                    Synchronized with EHR record #RX-9042
                   </span>
-                  <div className="w-12 h-2 bg-[#E7DDC8] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#6E8C4F] transition-all duration-500"
-                      style={{ width: `${adherencePercent}%` }}
-                    />
-                  </div>
+                  <span className="font-script text-xl text-[#2B2723]">
+                    Clinical Attestation: Dr. Katherine Chen, MD ✍️
+                  </span>
                 </div>
-              </div>
-
-              {/* 4 Time Slots Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {schedule.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`p-3.5 border transition-all relative ${
-                      item.isTaken
-                        ? "bg-[#FAF6EE] border-[#6E8C4F]/60 opacity-90"
-                        : "bg-white border-[#33302B]/20 hover:border-[#33302B]/50"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-elite text-[11px] px-1.5 py-0.5 bg-[#E7DDC8] text-[#33302B] font-semibold">
-                          {item.timeSlot}
-                        </span>
-                        <span className="font-cav text-lg font-bold text-[#33302B]">
-                          {item.slotLabel}
-                        </span>
-                      </div>
-
-                      {/* Interactive Taken Checkbox */}
-                      {item.dosage !== "—" && (
-                        <button
-                          type="button"
-                          onClick={() => handleToggleTaken(item.id)}
-                          className={`font-elite text-[10px] uppercase tracking-wider px-2 py-0.5 border flex items-center gap-1 transition-all ${
-                            item.isTaken
-                              ? "bg-[#6E8C4F] text-white border-[#6E8C4F]"
-                              : "bg-white text-[#33302B] border-[#33302B]/30 hover:bg-[#FAF6EE]"
-                          }`}
-                        >
-                          <CheckCircle2 className="w-3 h-3" />
-                          {item.isTaken ? "Taken" : "Mark Taken"}
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="font-karla text-sm font-bold text-[#33302B]">
-                      {item.medication}
-                      {item.dosage !== "—" && (
-                        <span className="font-elite text-xs text-[#A85A33] ml-1.5 font-semibold">
-                          ({item.dosage})
-                        </span>
-                      )}
-                    </div>
-
-                    <p className="font-karla text-[11px] text-[#4A463F] mt-1">
-                      {item.foodNote}
-                    </p>
-
-                    {item.isSpaced && (
-                      <div className="mt-2 inline-flex items-center gap-1 font-elite text-[10px] text-[#3F5C9A] bg-[#3F5C9A]/10 px-2 py-0.5 border border-[#3F5C9A]/30">
-                        ⚡ Auto-spaced by 4 hours for safety
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Doctor's Signature & Care Directive in Caveat */}
-              <div className="mt-4 pt-3 border-t border-[#33302B]/10 flex flex-wrap items-center justify-between text-xs text-[#4A463F] gap-2">
-                <span className="font-elite text-[11px] text-[#33302B]">
-                  Schedule synchronized with electronic medical record #RX-9042
-                </span>
-                <span className="font-cav text-xl text-[#33302B] rotate-[-2deg]">
-                  Reviewed & Approved: Dr. Katherine Chen, MD ✍️
-                </span>
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* ================= CAREGIVER PRINTABLE SUMMARY MODAL ================= */}
+      {isCaregiverModalOpen && (
+        <div className="fixed inset-0 z-50 bg-[#2B2723]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full border border-[#2B2723]/15 shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#2B2723]/10 pb-4">
+              <div>
+                <span className="font-mono-clinical text-[10px] uppercase tracking-wider text-[#A85A33]">
+                  PHARMALENS PS-6 CLINICAL ATTESTATION
+                </span>
+                <h3 className="text-xl font-bold text-[#2B2723]">
+                  Caregiver & Physician Emergency Medical Summary
+                </h3>
+                <p className="text-xs text-[#57524C] mt-0.5">
+                  Patient: Margaret Vance, 74 • ID #RX-9042 • Generated Today
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCaregiverModalOpen(false)}
+                className="text-[#8C857D] hover:text-[#2B2723] p-1.5 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Prescriptions Overview */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#2B2723]">
+                1. Active Prescription Regimen
+              </h4>
+              <div className="space-y-1.5 text-xs text-[#2B2723]">
+                {medications.map((m) => (
+                  <div
+                    key={m.id}
+                    className="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#2B2723]/10 flex items-center justify-between"
+                  >
+                    <span>
+                      <strong>{m.name}</strong> ({m.genericName}) — {m.dosage}
+                    </span>
+                    <span className="font-mono-clinical text-[11px] text-[#57524C]">
+                      {m.frequency}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Flagged Contraindications */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#A85A33]">
+                2. Documented Safety Contraindications
+              </h4>
+              {alerts.length > 0 ? (
+                <div className="space-y-2 text-xs">
+                  {alerts.map((a) => (
+                    <div
+                      key={a.id}
+                      className="p-3 rounded-lg bg-[#FAF8F5] border border-[#A85A33]/40"
+                    >
+                      <strong className="text-[#A85A33] block">{a.title}</strong>
+                      <p className="text-[#57524C] mt-0.5">{a.directive}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-[#5F7D43]">No contraindications flagged.</p>
+              )}
+            </div>
+
+            {/* Daily Schedule */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#2B2723]">
+                3. Daily Timeline Schedule
+              </h4>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {schedule.map((s) => (
+                  <div key={s.id} className="p-2 rounded bg-[#FAF8F5] border border-[#2B2723]/10">
+                    <span className="font-mono-clinical text-[10px] text-[#A85A33] font-bold">
+                      {s.timeSlot} {s.slotLabel}
+                    </span>
+                    <p className="font-bold text-[#2B2723]">{s.medication}</p>
+                    <p className="text-[10px] text-[#57524C]">{s.foodRequirement}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Bottom Actions */}
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#2B2723]/10">
+              <button
+                type="button"
+                onClick={() => setIsCaregiverModalOpen(false)}
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-[#57524C] hover:text-[#2B2723] cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="spring-hover px-5 py-2 rounded-lg bg-[#2B2723] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer hover:bg-[#1C1917]"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                Print Physical Medical Card
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,157 +1,122 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Karla:wght@400;500;700&family=Special+Elite&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Special+Elite&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    --color-paper: #F4EEE2;
-    --color-paper-warm: #E7DDC8;
-    --color-cork: #6B5B45;
-    --color-ink: #33302B;
-    --color-body-soft: #4A463F;
-    --color-ultramarine: #3F5C9A;
+    --color-paper: #FAF8F5;
+    --color-paper-warm: #EAE4D9;
+    --color-surface: #FFFFFF;
+    --color-ink: #2B2723;
+    --color-ink-muted: #57524C;
+    --color-ink-subtle: #8C857D;
+    --color-border: #E5DFD5;
+    --color-border-subtle: rgba(43, 39, 35, 0.08);
     --color-terracotta: #A85A33;
-    --color-sage: #6E8C4F;
-    --background: #F4EEE2;
-    --foreground: #33302B;
+    --color-terracotta-light: #FBF0EB;
+    --color-ultramarine: #3F5C9A;
+    --color-ultramarine-light: #EEF3FA;
+    --color-sage: #5F7D43;
+    --color-sage-light: #F0F5EC;
   }
 
   body {
-    background-color: #F4EEE2;
-    color: #33302B;
-    font-family: 'Karla', sans-serif;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: 'Plus Jakarta Sans', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
 }
 
-/* Typography Classes */
-.font-cav {
+/* Typography Utility Classes */
+.font-sans-clinical {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-script {
   font-family: 'Caveat', cursive;
 }
 
-.font-karla {
-  font-family: 'Karla', sans-serif;
-}
-
-.font-elite {
+.font-mono-clinical {
   font-family: 'Special Elite', monospace;
 }
 
-/* Sketchbook Skeuomorphism: SVG Paper Grain Texture */
-.grain {
-  position: absolute;
+/* Subtle Fixed Micro-Grain Texture */
+.fixed-grain {
+  position: fixed;
   inset: 0;
   pointer-events: none;
   mix-blend-mode: multiply;
-  opacity: 0.08;
-  z-index: 5;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  z-index: 50;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Washi Tape Strip */
-.tape {
-  position: absolute;
-  width: 90px;
-  height: 28px;
-  background: rgba(168, 90, 51, 0.28);
-  mix-blend-mode: multiply;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  z-index: 15;
+/* Double-Bezel Hardware Architecture (Outer Frame + Concentric Inner Core) */
+.double-bezel-card {
+  background: #FAF8F5;
+  border: 1px solid rgba(43, 39, 35, 0.07);
+  box-shadow: 0 4px 20px -4px rgba(43, 39, 35, 0.05), 0 1px 2px rgba(43, 39, 35, 0.02);
+  border-radius: 1.25rem;
+  padding: 0.375rem;
 }
 
-.tape-blue {
-  background: rgba(63, 92, 154, 0.25);
+.double-bezel-inner {
+  background: #FFFFFF;
+  border: 1px solid rgba(43, 39, 35, 0.06);
+  border-radius: calc(1.25rem - 0.375rem);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.tape-sage {
-  background: rgba(110, 140, 79, 0.28);
+/* Medical Laser Viewfinder Sweep */
+@keyframes laserSweepVertical {
+  0% {
+    top: 4%;
+    opacity: 0.4;
+  }
+  50% {
+    top: 92%;
+    opacity: 1;
+  }
+  100% {
+    top: 4%;
+    opacity: 0.4;
+  }
 }
 
-/* Torn Paper Card Clip-Paths */
-.torn-paper-1 {
-  clip-path: polygon(2% 3%, 98% 0%, 100% 95%, 4% 100%, 0% 50%);
+.animate-laser-sweep {
+  animation: laserSweepVertical 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.torn-paper-2 {
-  clip-path: polygon(0% 4%, 96% 1%, 100% 92%, 5% 100%, 1% 48%);
+/* High-End Spring Hover Physics */
+.spring-hover {
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-.torn-paper-3 {
-  clip-path: polygon(3% 1%, 100% 4%, 97% 97%, 0% 100%, 1% 44%);
+.spring-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -6px rgba(43, 39, 35, 0.08);
 }
 
-/* Polaroid & Card Hover Transitions */
-.polaroid-card {
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+.spring-hover:active {
+  transform: translateY(0) scale(0.99);
 }
 
-.polaroid-card:hover {
-  transform: rotate(0deg) translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 35px -10px rgba(51, 48, 43, 0.25);
-  z-index: 25;
-}
-
-/* Hand-Drawn Wobbly Ink Buttons */
-.ink-btn {
-  transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-.ink-btn:hover {
-  transform: translateY(-2px) rotate(-1deg);
-}
-
-.ink-btn:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-/* Watercolor Wash Backgrounds */
-.watercolor-blot-blue {
-  background: radial-gradient(circle at 45% 45%, rgba(63, 92, 154, 0.45), rgba(63, 92, 154, 0.12) 65%, transparent 78%);
-  border-radius: 55% 45% 60% 40% / 50% 55% 45% 50%;
-}
-
-.watercolor-blot-terracotta {
-  background: radial-gradient(circle at 50% 45%, rgba(168, 90, 51, 0.38), rgba(168, 90, 51, 0.12) 65%, transparent 78%);
-  border-radius: 50% 55% 45% 55% / 55% 45% 55% 45%;
-}
-
-.watercolor-blot-sage {
-  background: radial-gradient(circle at 45% 50%, rgba(110, 140, 79, 0.38), rgba(110, 140, 79, 0.12) 65%, transparent 78%);
-  border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
-}
-
-/* Sketchbook Center Gutter Spine Fold */
-.sketchbook-gutter {
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(51, 48, 43, 0.12) 40%,
-    rgba(51, 48, 43, 0.05) 50%,
-    rgba(51, 48, 43, 0.12) 60%,
-    transparent
-  );
-}
-
-/* Custom Terracotta Sketchbook Scrollbars */
+/* Custom Terracotta Clinical Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #E7DDC8;
+  background: #FAF8F5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #A85A33;
-  border-radius: 2px;
+  background: #EAE4D9;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8b4421;
-}
-
-/* Organic Blob Radius */
-.organic-blob {
-  border-radius: 48% 52% 55% 45% / 52% 48% 50% 50%;
+  background: #A85A33;
 }
