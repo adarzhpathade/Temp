@@ -11,7 +11,7 @@
 
 | Phase | Description | Status | Verification Gate |
 | :--- | :--- | :--- | :--- |
-| **Phase 0** | Monorepo Setup & Design System Tokens | ⬜ Pending | Dev server runs at `localhost:3000` with dark medical tokens |
+| **Phase 0** | Monorepo Setup & Design System Tokens | ✅ Completed | Dev server runs at `localhost:3000` with dark medical tokens |
 | **Phase 1** | Database Layer & Serverless Driver (Neon) | ⬜ Pending | HTTP connection + automatic local fallback verified |
 | **Phase 2** | Fail-Safe Clinical Mock Presets & Data Models | ⬜ Pending | 3 pre-seeded scenarios loaded with zero network dependencies |
 | **Phase 3** | AI Vision OCR & Pharmacology Rules Engine | ⬜ Pending | Gemini API + fallback rule engine passes JSON schema tests |
@@ -28,15 +28,15 @@
 Scaffold Next.js 14+ App Router, configure Tailwind CSS, and set up Framer Motion and Lucide React ready to adopt the user's design reference.
 
 ### Implementation Checklist:
-- [ ] **0.1 Initialize Next.js Project**:
+- [x] **0.1 Initialize Next.js Project**:
   - `npx -y create-next-app@latest ./ --typescript --tailwind --eslint --app --src-dir=false --import-alias="@/*"`
-- [ ] **0.2 Install Core Dependencies**:
+- [x] **0.2 Install Core Dependencies**:
   - `npm install framer-motion lucide-react @neondatabase/serverless canvas-confetti clsx tailwind-merge`
   - `npm install -D @types/canvas-confetti`
-- [ ] **0.3 Design Foundation Setup (`tailwind.config.ts` & `app/globals.css`)**:
+- [x] **0.3 Design Foundation Setup (`tailwind.config.ts` & `app/globals.css`)**:
   - Configure Tailwind CSS and base styles ready to receive styling directly from user-provided design references or prompts.
   - Zero hardcoded color assumptions; visual design tokens will be populated strictly based on user reference.
-- [ ] **0.4 Global Layout Shell (`app/layout.tsx` & `app/page.tsx`)**:
+- [x] **0.4 Global Layout Shell (`app/layout.tsx` & `app/page.tsx`)**:
   - Patient header (*"Patient: Margaret Vance, 74 • Polypharmacy Care"*) and core layout shell structured according to user-supplied design preferences.
 
 ### 🎛️ Fine-Tuning Knobs:
