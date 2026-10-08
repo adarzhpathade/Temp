@@ -1,36 +1,29 @@
-# Memory — Clinical Pharmacovigilance Platform UI Upgrade
+# Memory — Clinical Pharmacovigilance Platform & Modern Floating Island Nav
 
-Last updated: 2026-10-08 11:08 UTC
+Last updated: 2026-10-08 11:12 UTC
 
 ## What was built
 
-- **Platform-Suitable Executive Clinical UI**:
-  - Leveraged `high-end-visual-design` and `design-taste-frontend` skills to design an executive, surgical pharmacovigilance platform layout.
-  - Eliminated playful art-school landing page tropes (torn paper clip-paths, washi tape) in favor of **machined Double-Bezel hardware card enclosures** (`outer shell ring-1 ring-[#2B2723]/8` + `inner core shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]` with concentric radii).
-  - Adopted the luxury Atelier Nº9 color palette: warm clinical ivory canvas (`#FAF8F5`), deep walnut ink typography (`#2B2723` and `#57524C`), terracotta high-severity accents (`#A85A33`), ultramarine clinical optics (`#3F5C9A`), and sage safe/adherence accents (`#5F7D43`).
-  - Typography: Crisp `Plus Jakarta Sans` for medical legibility, `Special Elite` for technical timestamps/codes, and `Caveat` script for clinical doctor attestations.
-- **Master Bento Dashboard Architecture**:
-  - **Clinical Command Header**: Patient HUD (`Margaret Vance, 74 • MRN #RX-9042`), Audio Readout (Elderly Web Speech API), and Button-in-Button Caregiver Summary trigger.
-  - **1-Click Clinical Demo Scenarios**: Instant offline zero-failure switching between Scenario A (Bleeding Crisis), Scenario B (Thyroid Chelation Spacing), and Scenario C (Safe Maintenance).
-  - **Two Clean Input Channels**: Segmented switcher between Option 1 (Vision Reticle with illuminated laser sweep and photo dropzone) and Option 2 (Text Formulary with dosage strength chips).
-  - **Active Medicine Cabinet**: Real-time drug roster with 3D-styled physical pill appearance avatars and 1-tap deletion.
-  - **Contraindication Matrix**: High-risk severity cards with FDA black box warning tags, pharmacokinetic mechanism breakdowns, and bold Clinical Directives.
-  - **24-Hour Timeline & Adherence**: 4 time buckets with dynamic 4-hour spacing indicators, interactive checkboxes with celebration confetti, and daily adherence progress ring.
-  - **Caregiver Printable Summary Modal**: Complete emergency clinical summary sheet with active meds, flagged risks, schedule, and print triggers.
+- **Modern Floating Dynamic Island Command Nav** ([components/nav/FloatingCommandNav.tsx](file:///e:/Projects/Hackathon%20Projects/P6/components/nav/FloatingCommandNav.tsx)):
+  - Built using `high-end-visual-design` principles: detached glass capsule pill (`sticky top-4 sm:top-6 z-50 rounded-full`) with **Double-Bezel hardware architecture** (`outer shell rounded-full p-1.5 bg-[#FAF8F5]/80 backdrop-blur-2xl border border-[#2B2723]/10` + `concentric inner core rounded-full px-5 py-2 bg-white/95`).
+  - **Neural Radar & Liveness Indicator**: Stamped apothecary brand emblem with real-time green pulsating radar dot.
+  - **Interactive Center Patient Island**: Interactive patient dossier button (`Margaret Vance, 74 • #RX-9042`) that expands into a rich floating EHR details card on click.
+  - **Dynamic Audio Equalizer**: Soundwave equalizer animation with 4 dancing bars simulating speech synthesis activity when playing.
+  - **Button-in-Button Island CTA**: Primary `Caregiver Report` trigger with nested circular icon badge that rotates and scales on hover.
+  - **Clinical Telemetry Ribbon**: Real-time status indicators below the nav for Gemini Flash 2.0 Vision, Neon Postgres standby, and offline zero-failure resilience.
+- **Platform Architecture & Atelier Nº9 Color System**:
+  - Warm clinical ivory canvas (`#FAF8F5`), walnut ink text (`#2B2723`), terracotta alert accents (`#A85A33`), ultramarine clinical optics (`#3F5C9A`), and sage safe/adherence status (`#5F7D43`).
+  - Asymmetric Bento dashboard with 2 clean input channels (Option 1: Vision Reticle, Option 2: Text Formulary), 3 one-click fail-safe presets, active medicine cabinet, contraindication matrix, 24-hour timeline, and caregiver printable summary.
 
 ## Decisions made
 
-- **Design Persona & Direction**: Upgraded to an executive medical pharmacovigilance platform aesthetic (`Soft Structuralism & Editorial Luxury`), retaining the warm cream and ink color palette while delivering an interface appropriate for healthcare practitioners and patients.
-- **Double-Bezel Architecture**: Used concentric nested borders and subtle ambient depth to give hardware-level tactile presence without visual noise.
-
-## Problems solved
-
-- Removed gimmicky skeuomorphism that conflicted with serious medical data integrity while keeping the rich, tactile color palette.
+- **Nav Modernization**: Replaced edge-to-edge static rectangular sticky header with a floating dynamic island capsule with interactive EHR flyout and animated audio soundbars.
+- **Micro-Interactions**: Custom cubic-bezier spring physics `[0.32, 0.72, 0, 1]` for hover and press states.
 
 ## Current state
 
-- Phase 0 complete and verified.
-- Production build compiles cleanly in <1s with 0 errors and 0 warnings.
+- Phase 0 complete and verified with modern floating navigation.
+- Production build compiles cleanly in <1.1s with 0 errors and 0 warnings.
 - Dev server running on `http://localhost:3000`.
 
 ## Next session starts with

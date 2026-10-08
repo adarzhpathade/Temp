@@ -24,6 +24,7 @@ import {
   FileCheck,
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import { FloatingCommandNav } from "@/components/nav/FloatingCommandNav";
 
 interface MedicationItem {
   id: string;
@@ -457,77 +458,46 @@ export default function Home() {
       {/* Subtle Fixed Micro-Grain Texture */}
       <div className="fixed-grain" />
 
-      {/* ================= TOP CLINICAL COMMAND BAR ================= */}
-      <header className="sticky top-0 z-40 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#2B2723]/10 shadow-[0_1px_3px_rgba(43,39,35,0.03)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
-          {/* Logo & Product Identity */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#2B2723] flex items-center justify-center shadow-sm ring-1 ring-[#2B2723]/10">
-              <ShieldAlert className="w-5 h-5 text-[#FAF8F5]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-xl tracking-tight text-[#2B2723]">
-                  RxGuard
-                </span>
-                <span className="font-mono-clinical text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-md bg-[#EAE4D9] text-[#2B2723] border border-[#2B2723]/15">
-                  Pharmalens PS-6
-                </span>
-              </div>
-              <p className="text-[11px] text-[#57524C] hidden sm:block">
-                Clinical Prescription Scanner & Pharmacovigilance Matrix
-              </p>
-            </div>
+      {/* ================= MODERN FLOATING ISLAND COMMAND NAV ================= */}
+      <FloatingCommandNav
+        isAudioSpeaking={isAudioSpeaking}
+        onToggleAudio={handleToggleAudio}
+        onOpenCaregiverModal={() => setIsCaregiverModalOpen(true)}
+        alertCount={alerts.length}
+        medicationCount={medications.length}
+        adherenceRate={adherenceRate}
+      />
+
+      {/* Modern Clinical Telemetry Status Ribbon */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-1">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] text-[#57524C] bg-white/60 backdrop-blur-md px-4 py-2 rounded-xl border border-[#2B2723]/6 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5F7D43] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5F7D43]" />
+            </span>
+            <span className="font-semibold text-[#2B2723]">
+              Autonomous Safety Engine Armed
+            </span>
+            <span className="text-[#8C857D] hidden sm:inline">·</span>
+            <span className="hidden sm:inline font-mono-clinical text-[10px] text-[#3F5C9A]">
+              Gemini 2.0 Flash Vision Multimodal
+            </span>
           </div>
 
-          {/* Patient Dossier Chip */}
-          <div className="hidden md:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#FAF8F5] border border-[#2B2723]/12 shadow-xs">
-            <div className="w-6 h-6 rounded-full bg-[#EAE4D9] flex items-center justify-center text-[#2B2723]">
-              <User className="w-3.5 h-3.5" />
-            </div>
-            <div className="text-left text-xs">
-              <div className="flex items-center gap-1.5 font-semibold text-[#2B2723]">
-                <span>Margaret Vance, 74</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5F7D43]" />
-              </div>
-              <span className="font-mono-clinical text-[10px] text-[#3F5C9A]">
-                MRN #RX-9042 · Polypharmacy Protocol
-              </span>
-            </div>
-          </div>
-
-          {/* Action Hub (Audio, Caregiver Sheet, Print) */}
-          <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={handleToggleAudio}
-              className={`spring-hover px-3.5 py-2 rounded-lg text-xs font-medium border flex items-center gap-1.5 cursor-pointer ${
-                isAudioSpeaking
-                  ? "bg-[#A85A33] text-white border-[#A85A33] shadow-sm"
-                  : "bg-white text-[#2B2723] border-[#2B2723]/15 hover:bg-[#FAF8F5]"
-              }`}
-              title="Read clinical directives aloud for elderly patients"
-            >
-              <Volume2 className="w-4 h-4" />
-              <span className="hidden sm:inline">
-                {isAudioSpeaking ? "Speaking..." : "Audio Readout"}
-              </span>
-            </button>
-
-            {/* Nested Button-in-Button Architecture for Primary CTA */}
-            <button
-              type="button"
-              onClick={() => setIsCaregiverModalOpen(true)}
-              className="spring-hover group inline-flex items-center gap-2 pl-4 pr-1.5 py-1.5 rounded-full bg-[#2B2723] text-[#FAF8F5] text-xs font-semibold shadow-xs cursor-pointer hover:bg-[#1C1917]"
-            >
-              <span>Caregiver Summary</span>
-              <span className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-[#A85A33] transition-colors">
-                <Printer className="w-3.5 h-3.5 text-white" />
-              </span>
-            </button>
+          <div className="flex items-center gap-4 font-mono-clinical text-[10px]">
+            <span className="flex items-center gap-1.5 text-[#57524C]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3F5C9A]" />
+              Neon Postgres: Standby
+            </span>
+            <span className="flex items-center gap-1.5 text-[#57524C]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#A85A33]" />
+              Offline Fail-Safe: Armed
+            </span>
           </div>
         </div>
-      </header>
+      </div>
+
 
       {/* ================= MAIN DASHBOARD WORKSPACE ================= */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
